@@ -1,4 +1,10 @@
-from views.main_view import MainDisplay
+from controllers import main_control
+
+
+def main():
+    controller = main_control.HomeMenuController()
+    controller()
+
 
 if __name__ == "__main__":
-    MainDisplay().display_main_menu()
+    main()
