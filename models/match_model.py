@@ -1,8 +1,8 @@
 class Match:
     """
-    Un match unique doit être stocké sous la forme d'un tuple contenant deux listes,
-    chacune contenant deux éléments : une référence à une instance de joueur et un score.
-    Les matchs multiples doivent être stockés sous forme de liste sur l'instance du tour.
+    A single match should be stored as a tuple containing two lists, 
+    each one containing two elements: a reference to a player instance and a score.
+    Multiple matches should be stored as a list on the round instance.
     """
 
     MATCH_NUMBER = 1

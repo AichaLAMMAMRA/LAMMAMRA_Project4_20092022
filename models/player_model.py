@@ -4,14 +4,14 @@ import time
 from models import tournament_model
 from controllers import main_control, database
 
-from views import view_main
+from views import view_main, view
 
 
-# player_database = TinyDB('models/players.json')
 player_database = database.create_directory("player")
 
 
 class Player:
+    """Use to create an instance of a player"""
     def __init__(
         self,
         last_name=None,
@@ -67,6 +67,7 @@ class Player:
 
     def update_ranking(self):
         self.home_menu_controller = main_control.HomeMenuController()
+        self.menu = view.MenuViews()
         self.view_players = view_main.PlayersDiplay()
         self.players_database = player_database
 
@@ -74,7 +75,7 @@ class Player:
 
         valid_id = False
         while not valid_id:
-            player_id = input("Entrer le numéro du joueur : ")
+            player_id = self.menu.input_prompt("Entrer le numéro du joueur : ")
             if (
                 player_id.isdigit()
                 and int(player_id) >= 0
@@ -82,20 +83,20 @@ class Player:
             ):
                 valid_id = True
             else:
-                print("Vous devez entrer le numéro correspondant au joueur")
+                self.menu.input_error()
 
         valid_ranking = False
         while not valid_ranking:
-            new_ranking = input("Entrez le nouveau classement : ")
+            new_ranking = self.menu.input_prompt("Entrez le nouveau classement : ")
             if new_ranking.isdigit() and int(new_ranking) >= 0:
                 valid_ranking = True
             else:
-                print("Vous devez entrer un nombre entier positif")
+                self.menu.print_prompt("Vous devez entrer un nombre entier positif")
 
         player_to_modify = player_database.get(doc_id=int(player_id))
         player_to_modify["Classement"] = new_ranking
 
-        print(
+        self.menu.print_prompt(
             f"{player_to_modify['Nom']} {player_to_modify['Prenom']} \n"
             f"Nouveau classement : {player_to_modify['Classement']}"
         )

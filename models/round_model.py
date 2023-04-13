@@ -1,4 +1,4 @@
-from views import view_main
+from views import view_main, view
 from models.match_model import Match
 
 
@@ -44,6 +44,7 @@ class Tour:
     def run(self, sorted_players_list, tournament_object):
         self.view = view_main.TourDisplay()
         self.list_of_tours = []
+        self.menu = view.MenuViews()
         self.list_of_finished_matchs = []
         self.name = "Tour " + str(len(tournament_object.list_of_tours) + 1)
         # Tour.TOUR_NUMBER += 1
@@ -65,10 +66,10 @@ class Tour:
             valid_score_player_1 = False
             while not valid_score_player_1:
                 try:
-                    score_player_1 = input(f"Entrez le score de {match.player_1} :")
+                    score_player_1 = self.menu.input_prompt(f"Entrez le score de {match.player_1} :")
                     float(score_player_1)
                 except Exception:
-                    print("Vous devez entrer 0, 0.5, ou 1")
+                    self.menu.print_prompt("Vous devez entrer 0, 0.5, ou 1")
                 else:
                     match.score_player_1 = float(score_player_1)
                     match.player_1.tournament_score += float(score_player_1)
@@ -77,10 +78,10 @@ class Tour:
             valid_score_player_2 = False
             while not valid_score_player_2:
                 try:
-                    score_player_2 = input(f"Entrez le score de {match.player_2} :")
+                    score_player_2 = self.menu.input_prompt(f"Entrez le score de {match.player_2} :")
                     float(score_player_2)
                 except Exception:
-                    print("Vous devez entrer 0, 0.5, ou 1")
+                    self.menu.print_prompt("Vous devez entrer 0, 0.5, ou 1")
                 else:
                     match.score_player_2 = float(score_player_2)
                     match.player_2.tournament_score += float(score_player_2)
