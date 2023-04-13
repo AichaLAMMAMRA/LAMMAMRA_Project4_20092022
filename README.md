@@ -37,11 +37,11 @@ python -m venv env
 Ensuite, activez-le.
 Windows:
 ```
-env\scripts\activate.bat
+source env/scripts/activate
 ```
 Linux:
 ```
-source env/bin/activate
+source env/bin/activate.bat
 ```
 Il ne reste plus qu'à installer les packages requis:
 ```
@@ -50,5 +50,7 @@ pip install -r requirements.txt
 Vous pouvez enfin lancer le script:
 ```
 python main.py
+
+
 ```
 

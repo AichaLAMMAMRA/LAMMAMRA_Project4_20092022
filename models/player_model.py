@@ -1,11 +1,6 @@
 import time
-
-
-from models import tournament_model
 from controllers import main_control, database
-
 from views import view_main, view
-
 
 player_database = database.create_directory("player")
 

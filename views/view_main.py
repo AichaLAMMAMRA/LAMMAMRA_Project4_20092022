@@ -4,7 +4,7 @@ from os import system, name
 import pandas as pd
 
 from models import player_model
-from models import tournament_model,match_model
+from models import tournament_model, match_model
 
 
 class MainDisplay:

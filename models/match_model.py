@@ -1,10 +1,9 @@
 class Match:
     """
-    A single match should be stored as a tuple containing two lists, 
-    each one containing two elements: a reference to a player instance and a score.
+    A single match should be stored as a tuple containing two lists,
+    each containing two elements: a reference to a player instance and a score.
     Multiple matches should be stored as a list on the round instance.
     """
-
     MATCH_NUMBER = 1
 
     def __init__(

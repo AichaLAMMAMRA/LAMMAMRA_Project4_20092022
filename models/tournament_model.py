@@ -1,4 +1,3 @@
-from views import view_main
 from controllers import database
 
 

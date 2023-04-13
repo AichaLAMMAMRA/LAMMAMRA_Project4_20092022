@@ -3,9 +3,6 @@ import copy
 from operator import itemgetter
 from operator import attrgetter
 import pandas as pd
-
-
-#from controllers import database
 from controllers import main_control
 from controllers import create_menus
 from models import tournament_model
@@ -29,62 +26,63 @@ class CreateTournamentController:
         self.tournament = tournament_model.Tournament()
 
     def __call__(self):
+        self.menu.create_tournament_header()
         self.tournament_values.append(self.add_tournament_name())
         self.tournament_values.append(self.add_location())
         self.tournament_values.append(self.add_description())
         self.tournament_values.append(self.add_tournament_date())
         self.tournament_values.append(self.add_number_of_rounds())
         self.tournament_values.append(self.add_time_control())
-        
         self.add_players_to_tournament()
         self.tournament_values.append(self.players_in_tournament)
         self.tournament.add_to_database(self.tournament_values)
         self.home_menu_controller()
-    
-
 
     def add_tournament_name(self):
-        tournament_name = self.menu.input_prompt_txt("- Entrez Nom du tournoi:")
-        if tournament_name == "":
-         self.menu.input_error()
-        
-        return tournament_name   
+        valid_tournament_name = False
+        while not valid_tournament_name:
+            tournament_name = self.menu.input_prompt_txt("Nom du tournoi:")
+            if tournament_name != "":
+                valid_tournament_name = True
+            else:
+                self.menu.input_error()
+        return tournament_name
 
     def add_location(self):
-        location = self.menu.input_prompt_txt("- Entrez l'endroit où se déroule le tournoi:")
-        if location == "":
-            self.menu.input_error()
+        valid_location = False
+        while not valid_location:
+            location = self.menu.input_prompt_txt("- Lieu de tournoi:")
+            if location != "":
+                valid_location = True
+            else:
+                self.menu.input_error()
         return location
 
     def add_description(self):
-
-        description = self.menu.input_prompt_txt("- Entrez une description au tournoi:")
+        description = self.menu.input_prompt_txt("- Description au tournoi:")
         return description
 
     def add_tournament_date(self):
         date_list = []
-
         valid_day = False
         while not valid_day:
-            self.birth_day = self.menu.input_prompt("- Entrez le jour du tournoi:")
+            self.birth_day = self.menu.input_prompt("- Jour du tournoi:")
             if self.birth_day.isdigit() and len(self.birth_day) == 2 and int(self.birth_day) < 32:
                 valid_day = True
                 date_list.append(self.birth_day)
             else:
-                self.input_error()
-        
+                self.menu.input_error()
         valid_month = False
         while not valid_month:
-            self.birth_month = self.menu.input_prompt("- Entrez le mois du tournoi (En chiffre): ")
+            self.birth_month = self.menu.input_prompt("-Mois du tournoi (En chiffre): ")
             if self.birth_month.isdigit() and len(self.birth_month) == 2 and int(self.birth_month) < 13:
                 valid_month = True
                 date_list.append(self.birth_month)
             else:
-                self.input_error()
-
+                self.menu.input_error()
         valid_year = False
         while not valid_year:
-            self.birth_year = self.menu.input_prompt("- Entrez l'année du tournoi: ")
+            self.birth_year = self.menu.input_prompt("- Aannée du tournoi: ")
             if self.birth_year.isdigit() and len(self.birth_year) == 4:
                 valid_year = True
                 date_list.append(self.birth_year)
@@ -95,12 +93,10 @@ class CreateTournamentController:
 
     def add_number_of_rounds(self):
         number_of_rounds = 4
-        self.menu.print_prompt("Le nombre de rounds est : --- 4 par défaut----\n"
-                             "\n- Souhaitez-vous changer ce nombre ?")
-
+        self.menu.print_prompt("- Souhaitez-vous changer ce nombre ? : (4 par défaut)\n")
         valid_number = False
         while not valid_number:
-            self.menu.print_prompt("- 'Y' pour changer\n- 'N' pour continuer")
+            self.menu.print_prompt("- 'Y' pour changer\n - 'N' pour continuer")
             choice = self.menu.input_prompt("-->")
             if choice == "Y":
                 number_of_rounds = self.menu.input_prompt("- le nombre de rounds ():")
@@ -112,6 +108,18 @@ class CreateTournamentController:
                 valid_number = True
         return number_of_rounds
 
+    def add_time_control(self):
+        self.menu.print_prompt("- Contrôle du temps:")
+        time_control = None
+        entry = self.create_menu(self.create_menu.time_control_menu)
+        if entry == "1":
+            time_control = "Bullet"
+        if entry == "2":
+            time_control = "Blitz"
+        if entry == "3":
+            time_control = "Coup rapide"
+        return time_control
+
     def add_players_to_tournament(self):
         """Add the ids of the selected players in a list, en return the list"""
         view_main.ClearScreen()
@@ -119,7 +127,7 @@ class CreateTournamentController:
 
         valid_add_player_choice = False
         while not valid_add_player_choice:
-            add_player_choice = self.menu.input_prompt("- Voulez-vous ajouter un joueur ?[Y/N]\n " +"-->" )
+            add_player_choice = self.menu.input_prompt("- Voulez-vous ajouter un joueur ?[Y/N]\n "+"-->")
             if add_player_choice == "Y":
                 valid_add_player_choice = True
             elif add_player_choice == "N":
@@ -127,40 +135,33 @@ class CreateTournamentController:
             else:
                 self.menu.input_error()
         display_players_database = pd.read_json("data/player.json")
-
         self.menu.print_prompt(display_players_database)
         self.menu.print_prompt("- Vous devez choisir un nombre de joueurs\n")
-        self.menu.print_prompt("- Joueurs dans le tournoi : " + str(self.players_id))
+        self.menu.print_prompt("- Joueurs dans le tournoi : " + str(self.players_ids) + "\n")
         self.menu.print_prompt("- Entrez le numéro du joueur :")
-        
         valid_id = False
         while not valid_id:
             id_choice = self.menu.input_prompt("-->")
             try:
                 int(id_choice)
-        
             except Exception:
                 self.menu.input_error()
             else:
                 valid_id = True
         id_choice = int(id_choice)
-
         if id_choice <= 0 or id_choice > len(player_model.player_database):
             self.menu.print_prompt("- Vous devez choisir un joueur dans la liste")
-            self.menu.input_prompt_txt("- Joueurs dans le tournoi : " + str(self.players_ids))
+            self.menu.input_prompt_txt("- Joueurs dans le tournoi : " + str(self.players_ids) + "\n")
             time.sleep(1)
             self.add_players_to_tournament()
-
         if id_choice in self.players_ids:
             self.menu.input_prompt_txt("- Vous avez déjà choisi ce joueur dans ce tournoi")
-            self.menu.input_prompt_txt("- Joueurs dans le tournoi  "+ str(players_ids))
+            self.menu.input_prompt_txt("- Joueurs dans le tournoi  " + str(self.players_ids) + "\n")
             time.sleep(1)
             self.add_players_to_tournament()
-
         self.players_ids.append(id_choice)
-        self.menu.input_prompt_txt("- Joueurs dans le tournoi : " + str(self.players_ids))
+        self.menu.input_prompt_txt("- Joueurs dans le tournoi : " + str(self.players_ids) + "\n")
         self.add_players_to_tournament()
-
 
         # iterate in id's list, create instance of players, then sort them by ranking.
         for id in self.players_ids:
@@ -173,25 +174,15 @@ class CreateTournamentController:
             self.players_ids.append(player.doc_id)
         self.tournament_values.append(self.players_ids.copy())
 
-    def add_time_control(self):
-        self.menu.print_prompt("- Choisissez le contrôle du temps:")
-        time_control = None
-        entry = self.create_menu(self.create_menu.time_control_menu)
-        if entry == "1":
-            time_control = "Bullet"
-        if entry == "2":
-            time_control = "Blitz"
-        if entry == "3":
-            time_control = "Coup rapide"
-        return time_control
-
-
 
 class StartTournament:
     """Controller who start the tournament, stop when the tournament is ended"""
 
     MATCHS_PLAYED = []
     TOURS_PLAYED = []
+
+    def __init__(self):
+        self.menu = view.MenuViews()
 
     def __call__(self):
         self.sorted_players = []
@@ -220,7 +211,6 @@ class StartTournament:
         self.home_menu_controller()
 
     def save_tournament_statement(self, tournament_object):
-
         self.home_menu_controller = main_control.HomeMenuController()
         db_tournament = tournament_model.tournament_database
         tours_table = db_tournament.table("tours")
@@ -233,10 +223,10 @@ class StartTournament:
         StartTournament.TOURS_PLAYED.append(tour_id)
         db_tournament.update({"Tours": StartTournament.TOURS_PLAYED}, doc_ids=[tournament_object.tournament_id])
 
-        print_prompt("- Voulez vous sauvegarder et quitter le tournoi en cours ? Y / N\n")
+        self.menu.print_prompt("- Voulez vous sauvegarder et quitter le tournoi en cours ? Y / N\n")
         valid_choice = False
         while not valid_choice:
-            choice = self.menu.input_prompt_txt("-->")
+            choice = self.menu.input_prompt("-->")
             if choice == 'Y':
                 valid_choice = True
                 self.home_menu_controller()
@@ -244,7 +234,7 @@ class StartTournament:
                 valid_choice = True
                 break
             else:
-                self.menu.input_error("- Vous devez entrer 'Y' ou 'N'")
+                self.menu.print_prompt("- Vous devez entrer 'Y' ou 'N'")
                 continue
 
     def load_tournament_statement(self):
@@ -262,8 +252,8 @@ class StartTournament:
         if self_display_tournament():  # True if there is tournaments already started
             valid_entry = False
             while not valid_entry:
-                self.menu.print_prompt("- Entrez le chiffre correspondant au tournoi:")
-                choice = self.nput_prompt("--> ")
+                self.menu.input_prompt("- Entrez le chiffre correspondant au tournoi:")
+                choice = self.menu.input_prompt("-->")
                 try:
                     int(choice)
                     valid_entry = True
@@ -302,7 +292,7 @@ class StartTournament:
             valid_entry = False
             while not valid_entry:
                 self.menu.print_prompt("- Entrez le chiffre correspondant au tournoi:")
-                choice = self.menu.input_prompt_txt("--> ")
+                choice = self.menu.input_prompt("--> ")
                 try:
                     choice.isdigit() is False
                     int(choice) < len(tournament_model.tournament_database)
@@ -350,6 +340,7 @@ class StartTournament:
 
     def sort_players_by_score(self, tour_instance):
         """ return a list of players sorted by score"""
+
         self.player = player_model.Player()
         players = []
         players_sorted_by_score = []
@@ -460,12 +451,10 @@ class TournamentReport:
                         tournament_object = self.tournament_database.get(doc_id=int(choice_id))
                         tournament_object = self.tournament.unserialized(tournament_object)
                         if tournament_object.list_of_tours == []:
-                            self.menu.print_prompt("- Le tournoi n'a pas encore eu lieu, vous ne pouvez pas afficher les résultats")
+                            self.menu.print_prompt("- Tournoi n'a pas encore organisé ")
                             time.sleep(1)
-
                         else:
                             entry = self.create_menu(self.create_menu.tournaments_report_menu_2)
-
                             # Display the players
                             if entry == "1":
                                 entry = self.create_menu(self.create_menu.players_report_menu)
@@ -483,7 +472,7 @@ class TournamentReport:
                                 for tour in tournament_object.list_of_tours:
                                     tr = tour_table.get(doc_id=tour)
                                     self.menu.print_prompt(f"{tr['Nom']} - Début: {tr['Debut']} - Fin : {tr['Fin']}\n")
-                                self.menu.input_prompt_txt("Appuyez sur une touche pour revenir au menu rapport de tournoi")
+                                self.menu.input_prompt_txt("Appuyez sur une touche pour revenir rapport de tournoi")
                                 TournamentReport.__call__(self)
 
                             # Display the matchs
@@ -499,10 +488,10 @@ class TournamentReport:
                                         player_2 = self.players_database.get(doc_id=player_2)
                                         score_player_2 = match[1][1]
                                         self.menu.print_prompt(f"{player_1['Nom']} {player_1['Prenom']} CONTRE "
-                                              f"{player_2['Nom']} {player_2['Prenom']}\n"
-                                              f"Score : {score_player_1} -- {score_player_2}\n")
+                                                               f"{player_2['Nom']} {player_2['Prenom']}\n"
+                                                               f"Score : {score_player_1} -- {score_player_2}\n")
 
-                                self.menu.input_prompt_txt("- Appuyez sur une touche pour revenir au menu rapport de tournoi")
+                                self.menu.input_prompt_txt("- Appuyez sur une touche pour revenir rapport de tournoi")
                                 TournamentReport.__call__(self)
 
                             # Go to main menu

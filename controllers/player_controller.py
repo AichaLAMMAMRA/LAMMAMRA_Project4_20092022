@@ -2,7 +2,7 @@ from operator import attrgetter
 
 from controllers import main_control
 from models import player_model
-from views import view_main,view
+from views import view_main, view
 from controllers import create_menus
 
 
@@ -16,7 +16,7 @@ class CreatePlayerController:
 
     def __call__(self):
 
-        self.user_input = int (self.menu.input_prompt("- Nombre de joueurs à créer: "))
+        self.user_input = int(self.menu.input_prompt("- Nombre de joueurs à créer:"))
         for i in range(self.user_input):
             self.player_model = player_model.Player()
             self.player_values.append(self.add_last_name())
@@ -26,10 +26,8 @@ class CreatePlayerController:
             self.player_values.append(self.add_ranking())
             if self.validate_player():
                 self.player_model.add_to_database(self.player_values)
-                self.player_values.clear()  
-
-        
-        self.home_menu_controller()
+                self.player_values.clear()
+            self.home_menu_controller()
 
     def add_last_name(self):
         valid_last_name = False
@@ -87,8 +85,7 @@ class CreatePlayerController:
         valid_gender = False
         validated_gender = None
         while not valid_gender:
-            gender = self.menu.input_prompt("- Choisissez le genre du joueur \n"
-                           "- 'H' pour un homme \n'- F' pour une femme:")
+            gender = self.menu.input_prompt("Genre du joueur: 'H' pour un homme 'F' pour une femme\n")
             if gender == "H":
                 valid_gender = True
                 validated_gender = "Homme"
@@ -110,13 +107,9 @@ class CreatePlayerController:
         return int(ranking)
 
     def validate_player(self):
-        #view_main.FrameDisplay.display_datas_in_a_frame(self.player_values, self.player_keys)
-
-
         validated_choice = False
         while not validated_choice:
-            self.menu.print_prompt("- Valider ce joueur ? \n"
-                  "  -'Y' pour valider, - 'N' pour recommencer")
+            self.menu.print_prompt("- Valider ce joueur ?[Y/N] \n")
             choice = self.menu.input_prompt("-->")
             if choice == "Y":
                 validated_choice = True
@@ -148,6 +141,5 @@ class PlayerReport:
             player_serialized.sort(key=attrgetter("last_name"))
             self.display_player.display_alphabetical(player_serialized)
             PlayerReport.__call__(self)
-        
         if entry == "2":
             self.home_menu_controller()
