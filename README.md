@@ -50,7 +50,14 @@ pip install -r requirements.txt
 Vous pouvez enfin lancer le script:
 ```
 python main.py
-
-
 ```
+## Générer un rapport flake8
+
+    $ flake8 --format=html --htmldir=flake8_report
+
+**Vous trouverez le rapport dans le dossier _'flake8-report'_.**
+
+_Dernier rapport exporté :_
+
+![latest_report](images/latest_report.png)
 
