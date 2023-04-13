@@ -2,7 +2,7 @@ from operator import attrgetter
 
 from controllers import main_control
 from models import player_model
-from views import view_main
+from views import view_main,view
 from controllers import create_menus
 
 
@@ -10,12 +10,13 @@ class CreatePlayerController:
     """Enter all the player's details, then add the player in the database"""
     def __init__(self):
         self.player_values = []
+        self.menu = view.MenuViews()
         self.player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Classement"]
         self.home_menu_controller = main_control.HomeMenuController()
 
     def __call__(self):
 
-        self.user_input = int (input("Nombre de joueurs à créer: "))
+        self.user_input = int (self.menu.input_prompt("- Nombre de joueurs à créer: "))
         for i in range(self.user_input):
             self.player_model = player_model.Player()
             self.player_values.append(self.add_last_name())
@@ -25,28 +26,29 @@ class CreatePlayerController:
             self.player_values.append(self.add_ranking())
             if self.validate_player():
                 self.player_model.add_to_database(self.player_values)
-                self.player_values.clear()                
+                self.player_values.clear()  
+
         
         self.home_menu_controller()
 
     def add_last_name(self):
         valid_last_name = False
         while not valid_last_name:
-            last_name = input("Entrez le nom de famille: ")
+            last_name = self.menu.input_prompt("- Entrez le nom de famille: ")
             if last_name != "":
                 valid_last_name = True
             else:
-                print("Vous devez entrer un nom")
+                self.menu.input_error()
         return last_name
 
     def add_first_name(self):
         valid_first_name = False
         while not valid_first_name:
-            first_name = input("Entrez le prénom: ")
+            first_name = self.menu.input_prompt("- Entrez le prénom: ")
             if first_name != "":
                 valid_first_name = True
             else:
-                print("Vous devez entrer un prénom ")
+                self.menu.input_error()
         return first_name
 
     def add_birth_details(self):
@@ -54,30 +56,30 @@ class CreatePlayerController:
 
         valid_day = False
         while not valid_day:
-            self.birth_day = input("Entrez le jour de naissance: ")
+            self.birth_day = self.menu.input_prompt("- Entrez le jour de naissance: ")
             if self.birth_day.isdigit() and len(self.birth_day) == 2 and int(self.birth_day) < 32:
                 valid_day = True
                 birthdate_list.append(self.birth_day)
             else:
-                print("Vous devez entrer un nombre à 2 chiffres <= 31")
+                self.menu.print_prompt("- Vous devez entrer un nombre à 2 chiffres <= 31")
 
         valid_month = False
         while not valid_month:
-            self.birth_month = input("Entrez le mois de naissance: (En chiffre) ")
+            self.birth_month = self.menu.input_prompt("- Entrez le mois de naissance: (En chiffre) ")
             if self.birth_month.isdigit() and len(self.birth_month) == 2 and int(self.birth_month) < 13:
                 valid_month = True
                 birthdate_list.append(self.birth_month)
             else:
-                print("Vous devez entrer un nombre à 2 chiffres <= 12")
+                self.menu.print_prompt("- Vous devez entrer un nombre à 2 chiffres <= 12")
 
         valid_year = False
         while not valid_year:
-            self.birth_year = input("Entrez l'année de naissance: ")
+            self.birth_year = self.menu.input_prompt("- Entrez l'année de naissance: ")
             if self.birth_year.isdigit() and len(self.birth_year) == 4 and int(self.birth_year) < 2021:
                 valid_year = True
                 birthdate_list.append(self.birth_year)
             else:
-                print("Veuillez entrer une année à 4 chiffres (exemple : 1980)")
+                self.menu.print_prompt("- Veuillez entrer une année à 4 chiffres (exemple : 1980)")
 
         return f"{birthdate_list[0]}/{birthdate_list[1]}/{birthdate_list[2]}"
 
@@ -85,8 +87,8 @@ class CreatePlayerController:
         valid_gender = False
         validated_gender = None
         while not valid_gender:
-            gender = input("Choisissez le genre du joueur \n"
-                           "'H' pour un homme \n'F' pour une femme: ")
+            gender = self.menu.input_prompt("- Choisissez le genre du joueur \n"
+                           "- 'H' pour un homme \n'- F' pour une femme:")
             if gender == "H":
                 valid_gender = True
                 validated_gender = "Homme"
@@ -94,17 +96,17 @@ class CreatePlayerController:
                 valid_gender = True
                 validated_gender = "Femme"
             else:
-                print("Vous devez entrer un genre (H ou F)")
+                self.menu.print_prompt("- Vous devez entrer un genre (H ou F)")
         return validated_gender
 
     def add_ranking(self):
         valid_ranking = False
         while not valid_ranking:
-            ranking = input("Entrez le classement du joueur: ")
+            ranking = self.menu.input_prompt("- Entrez le classement du joueur: ")
             if ranking.isdigit() and int(ranking) >= 0:
                 valid_ranking = True
             else:
-                print("Vous devez entrer un nombre entier positif")
+                self.menu.print_prompt("- Vous devez entrer un nombre entier positif")
         return int(ranking)
 
     def validate_player(self):
@@ -113,15 +115,15 @@ class CreatePlayerController:
 
         validated_choice = False
         while not validated_choice:
-            print("Valider ce joueur ? \n"
-                  "'Y' pour valider, 'N' pour recommencer")
-            choice = input("-->")
+            self.menu.print_prompt("- Valider ce joueur ? \n"
+                  "  -'Y' pour valider, - 'N' pour recommencer")
+            choice = self.menu.input_prompt("-->")
             if choice == "Y":
                 validated_choice = True
             elif choice == "N":
                 main_control.HomeMenuController()
             else:
-                print("Vous devez entrer 'Y' ou 'N'")
+                self.menu.print_prompt("- Vous devez entrer 'Y' ou 'N'")
         return validated_choice
 
 
