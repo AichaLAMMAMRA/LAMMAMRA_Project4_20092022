@@ -1,5 +1,7 @@
 # Application gérant un tournoi d'échecs
 
+![chess_club](img/chess_club.png)
+
 
 ### Openclassroom projet 04
 
@@ -17,7 +19,7 @@ Il permet de :
 - Générer différents rapport.
 
 
-## Prérequis
+## Installation:
 
 Vous devez installer python, la dernière version se trouve à cette adresse 
 https://www.python.org/downloads/
