@@ -121,7 +121,7 @@ class CreatePlayerController:
 
 
 class PlayerReport:
-    """Display the players reports"""
+    """Display the players report"""
 
     def __call__(self):
         self.create_menu = create_menus.CreateMenus()
